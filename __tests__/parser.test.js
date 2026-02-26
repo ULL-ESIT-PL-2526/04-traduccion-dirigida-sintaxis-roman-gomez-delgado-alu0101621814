@@ -130,7 +130,6 @@ describe('Parser Tests', () => {
   describe('Modificaciones del Analizador Léxico', () => {
     
     test('should recognize floating point and scientific notation', () => {
-      // Punto 4: Soporte para números decimales y notación científica
       expect(parse("2.35")).toBe(2.35);
       expect(parse("2.35e-3")).toBe(0.00235);
       expect(parse("2.35E+3")).toBe(2350);
@@ -139,7 +138,6 @@ describe('Parser Tests', () => {
     });
 
     test('should ignore one-line comments starting with //', () => {
-      // Punto 3: Soporte para saltar comentarios
       expect(parse("10 + 5 // esto es un comentario")).toBe(15);
       expect(parse("2 ** 3 // potencia")).toBe(8);
       expect(parse("// comentario solo\n 7 - 2")).toBe(5);
@@ -149,20 +147,18 @@ describe('Parser Tests', () => {
 
   describe('Input validation and error cases', () => {
     test('should handle invalid input gracefully', () => {
-      // Estos deben lanzar errores capturados por el parser
       expect(() => parse("")).toThrow();
       expect(() => parse("abc")).toThrow();
       expect(() => parse("3 +")).toThrow();
       expect(() => parse("+ 3")).toThrow();
       expect(() => parse("3 + + 4")).toThrow();
-      // Nota: 3.5 ya NO debería lanzar error tras la modificación del Punto 4
     });
 
     test('should handle incomplete expressions', () => {
       expect(() => parse("3 +")).toThrow();
       expect(() => parse("* 5")).toThrow();
-      expect(() => parse("3 4")).toThrow(); // Falta operador
-      expect(() => parse("5 + @")).toThrow(); // Carácter inválido
+      expect(() => parse("3 4")).toThrow(); 
+      expect(() => parse("5 + @")).toThrow(); 
     });
   });
 
