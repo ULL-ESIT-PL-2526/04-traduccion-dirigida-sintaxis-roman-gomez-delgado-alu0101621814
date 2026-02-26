@@ -110,7 +110,6 @@ describe('Parser Tests', () => {
       expect(() => parse("3 +")).toThrow();
       expect(() => parse("+ 3")).toThrow();
       expect(() => parse("3 + + 4")).toThrow();
-      expect(() => parse("3.5")).toThrow(); // Only integers are supported
     });
 
     test('should handle incomplete expressions', () => {
@@ -128,4 +127,55 @@ describe('Parser Tests', () => {
     });
   });
 
+  describe('Modificaciones del Analizador Léxico', () => {
+    
+    test('should recognize floating point and scientific notation', () => {
+      // Punto 4: Soporte para números decimales y notación científica
+      expect(parse("2.35")).toBe(2.35);
+      expect(parse("2.35e-3")).toBe(0.00235);
+      expect(parse("2.35E+3")).toBe(2350);
+      expect(parse("23")).toBe(23);
+      expect(parse("2.35e3")).toBe(2350);
+    });
+
+    test('should ignore one-line comments starting with //', () => {
+      // Punto 3: Soporte para saltar comentarios
+      expect(parse("10 + 5 // esto es un comentario")).toBe(15);
+      expect(parse("2 ** 3 // potencia")).toBe(8);
+      expect(parse("// comentario solo\n 7 - 2")).toBe(5);
+      expect(parse("4 * 2 // 1000")).toBe(8);
+    });
+  });
+
+  describe('Input validation and error cases', () => {
+    test('should handle invalid input gracefully', () => {
+      // Estos deben lanzar errores capturados por el parser
+      expect(() => parse("")).toThrow();
+      expect(() => parse("abc")).toThrow();
+      expect(() => parse("3 +")).toThrow();
+      expect(() => parse("+ 3")).toThrow();
+      expect(() => parse("3 + + 4")).toThrow();
+      // Nota: 3.5 ya NO debería lanzar error tras la modificación del Punto 4
+    });
+
+    test('should handle incomplete expressions', () => {
+      expect(() => parse("3 +")).toThrow();
+      expect(() => parse("* 5")).toThrow();
+      expect(() => parse("3 4")).toThrow(); // Falta operador
+      expect(() => parse("5 + @")).toThrow(); // Carácter inválido
+    });
+  });
+
+  describe('Regression tests', () => {
+    test('should match examples from index.js', () => {
+      expect(parse("1 - 2")).toBe(-1);
+      expect(parse("10 - 4 - 3")).toBe(3);
+      expect(parse("7 - 5 - 1")).toBe(1);
+    });
+
+    test('should handle power operator correctly', () => {
+      expect(parse("2 ** 3")).toBe(8);
+      expect(parse("3 ** 2")).toBe(9);
+    });
+  });
 });
